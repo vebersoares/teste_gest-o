@@ -1,11 +1,11 @@
-// Captura o formulário e a tabela HTML
+// formulário e a tabela HTML
 const form = document.getElementById('categoriaForm');
 const tabela = document.getElementById('categoriaTabela');
 
-let categorias = []; // Armazena as categorias no cliente
-let categoriaEditandoId = null; // Guarda o ID da categoria que está sendo editada
+let categorias = []; // Armazena as categorias 
+let categoriaEditandoId = null; // Guarda o ID da categoria editada
 
-// Evento ao submeter o formulário
+
 form.addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -13,8 +13,8 @@ form.addEventListener('submit', function (e) {
     const descricao = document.getElementById('descricao').value.trim();
     const data = document.getElementById('data').value;
 
-    // Verifica se já existe uma categoria com o mesmo nome E descrição (ignora maiúsculas/minúsculas),
-    // e que não seja a categoria que está sendo editada
+    // Verifica se já existe uma categoria com o mesmo nome E descrição 
+  
     const existeDuplicado = categorias.some(cat =>
         cat.nome.toLowerCase() === nome.toLowerCase() &&
         cat.descricao.toLowerCase() === descricao.toLowerCase() &&
@@ -22,7 +22,7 @@ form.addEventListener('submit', function (e) {
     );
     if (existeDuplicado) {
         alert("Já existe uma categoria com esse nome e descrição.");
-        return; // Interrompe o envio para evitar duplicação
+        return; // evitar duplicação
     }
 
     const categoria = {
@@ -33,7 +33,7 @@ form.addEventListener('submit', function (e) {
     };
 
     if (categoriaEditandoId) {
-        // Atualizar categoria existente (PUT)
+        // Atualizar categoria existente 
         fetch(`http://localhost:3000/categoria/${categoriaEditandoId}`, {
             method: "PUT",
             headers: {
@@ -43,18 +43,18 @@ form.addEventListener('submit', function (e) {
         })
             .then(res => res.json())
             .then(dataAtualizada => {
-                // Atualiza o item no array local
+                // Atualiza o item no array
                 categorias = categorias.map(cat => cat.id === categoriaEditandoId ? dataAtualizada : cat);
                 atualizarTabela();
                 form.reset();
-                categoriaEditandoId = null; // Resetar edição
+                categoriaEditandoId = null; 
             })
             .catch(err => {
                 console.error("Erro ao atualizar categoria no servidor:", err);
                 alert("Erro ao atualizar categoria. Tente novamente.");
             });
     } else {
-        // Criar nova categoria (POST)
+        // Cria nova categoria 
         fetch("http://localhost:3000/categoria", {
             method: "POST",
             headers: {
@@ -64,7 +64,7 @@ form.addEventListener('submit', function (e) {
         })
             .then(res => res.json())
             .then(dataSalva => {
-                categorias.push(dataSalva); // Esse dataSalva terá o ID do servidor!
+                categorias.push(dataSalva); 
                 atualizarTabela();
                 form.reset();
             })
@@ -76,7 +76,7 @@ form.addEventListener('submit', function (e) {
 });
 
 function atualizarTabela() {
-    tabela.innerHTML = ''; // Limpa a tabela antes de atualizar
+    tabela.innerHTML = ''; // Limpa a tabela 
 
     categorias.forEach((cat) => {
         const tr = document.createElement('tr');
@@ -95,7 +95,7 @@ function atualizarTabela() {
     });
 }
 
-// Função para excluir uma categoria (sem restrição no campo 'vinculada')
+// excluir uma categoria 
 function excluirCategoria(id) {
     const categoria = categorias.find(c => c.id === id);
 
@@ -108,7 +108,7 @@ function excluirCategoria(id) {
         method: 'DELETE'
     })
         .then(() => {
-            // Atualiza o array local e tabela somente após confirmação do servidor
+            // Atualiza o array local e tabela
             categorias = categorias.filter(cat => cat.id !== id);
             atualizarTabela();
         })
@@ -118,7 +118,7 @@ function excluirCategoria(id) {
         });
 }
 
-// Função para editar uma categoria
+//editar uma categoria
 function editarCategoria(id) {
     const categoria = categorias.find(cat => cat.id === id);
 
@@ -127,11 +127,11 @@ function editarCategoria(id) {
         document.getElementById('descricao').value = categoria.descricao;
         document.getElementById('data').value = categoria.data;
 
-        categoriaEditandoId = id; // Define que está editando essa categoria
+        categoriaEditandoId = id; 
     }
 }
 
-// Carrega as categorias salvas no servidor ao carregar a página
+// Carrega as categorias salvas no json
 window.addEventListener('DOMContentLoaded', () => {
     fetch("http://localhost:3000/categoria")
         .then(response => response.json())
